@@ -5,8 +5,10 @@ import * as ssrf from "../infra/net/ssrf.js";
 const originalResolvePinnedHostnameWithPolicy = ssrf.resolvePinnedHostnameWithPolicy;
 
 export function mockPinnedHostnameResolution(addresses: string[] = ["93.184.216.34"]) {
-  const fakeLookup: ssrf.LookupFn = async () =>
-    addresses.map((addr) => ({ address: addr, family: addr.includes(":") ? 6 : 4 }));
+  const fakeLookup = (async () => ({
+    address: addresses[0] ?? "93.184.216.34",
+    family: (addresses[0] ?? "").includes(":") ? 6 : 4,
+  })) as unknown as ssrf.LookupFn;
 
   const mockImpl = async (hostname: string) => {
     const normalized = hostname.trim().toLowerCase().replace(/\.$/, "");

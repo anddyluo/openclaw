@@ -139,8 +139,10 @@ export function installWebAutoReplyUnitTestHooks(opts?: { pinDns?: boolean }) {
     _resetLoadConfigMock();
     if (opts?.pinDns) {
       const addresses = [TEST_NET_IP];
-      const fakeLookup: ssrf.LookupFn = async () =>
-        addresses.map((addr) => ({ address: addr, family: addr.includes(":") ? 6 : 4 }));
+      const fakeLookup = (async () => ({
+        address: addresses[0] ?? "93.184.216.34",
+        family: (addresses[0] ?? "").includes(":") ? 6 : 4,
+      })) as unknown as ssrf.LookupFn;
       resolvePinnedHostnameSpy = vi
         .spyOn(ssrf, "resolvePinnedHostname")
         .mockImplementation(async (hostname) => {
